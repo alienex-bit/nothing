@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'food_element.dart';
 
 class Protocell extends BodyComponent with ContactCallbacks {
-  static const double minRadius = 0.4;
-  static const double maxRadius = 1.2;
+  static const double minRadius = 0.8;
+  static const double maxRadius = 2.4;
 
   final Vector2 position;
   double radius = minRadius;
@@ -42,9 +42,7 @@ class Protocell extends BodyComponent with ContactCallbacks {
   }
 
   void moveBy(Vector2 delta) {
-    body.applyLinearImpulse(
-      delta * 0.4,
-    ); // Reduced impulse for microscopic control
+    body.applyLinearImpulse(delta * 1.5); // Increased for better feel
   }
 
   @override
@@ -69,23 +67,31 @@ class Protocell extends BodyComponent with ContactCallbacks {
     // Organic pulsation scale
     final pulse = 1.0 + 0.05 * math.sin(_time * 2.5);
 
-    // Membrane (semi-transparent outer layer)
-    final membranePaint = Paint()
-      ..color = Colors.cyan.withOpacity(0.15)
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset.zero, radius * pulse * 1.12, membranePaint);
+    // Membrane Border (thick prominent edge to see throbbing)
+    final borderPaint = Paint()
+      ..color = Colors.cyan.withOpacity(0.8)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.08;
+    canvas.drawCircle(Offset.zero, radius * pulse * 1.05, borderPaint);
 
-    // Main Cell Body
+    // Membrane Fill (near invisible to remove white haze)
+    final membranePaint = Paint()
+      ..color = Colors.cyan.withOpacity(0.02)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset.zero, radius * pulse * 1.05, membranePaint);
+
+    // Main Cell Body (near invisible)
     final bodyPaint = Paint()
-      ..color = Colors.cyan.withOpacity(0.5)
+      ..color = Colors.cyan.withOpacity(0.05)
       ..style = PaintingStyle.fill;
     canvas.drawCircle(Offset.zero, radius * pulse, bodyPaint);
 
-    // Small biological nucleus
+    // Biological nucleus (Highly Visible Red dot)
     final nucleusPaint = Paint()
-      ..color = Colors.white.withOpacity(0.7)
+      ..color =
+          const Color(0xFFFF0000) // Pure Red
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset.zero, radius * 0.15, nucleusPaint);
+    canvas.drawCircle(Offset.zero, radius * 0.3, nucleusPaint);
   }
 
   @override
